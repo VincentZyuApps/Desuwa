@@ -22,7 +22,7 @@
 
 ---
 
-### What's Changed
+### ✨ What's Changed
 
 __COMMIT_LOG__
 

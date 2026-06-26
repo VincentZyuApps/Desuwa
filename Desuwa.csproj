@@ -23,8 +23,4 @@
         <EmbeddedResource Include="Assets\disabled.ico" />
     </ItemGroup>
 
-    <ItemGroup>
-        <TrimmerRootDescriptor Include="TrimmingRoots.xml" />
-    </ItemGroup>
-
 </Project>
