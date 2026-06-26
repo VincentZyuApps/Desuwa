@@ -81,7 +81,7 @@ jobs:
 
       - name: Build self-contained version
         run: |
-          dotnet publish Desuwa.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish-selfcontained
+          dotnet publish Desuwa.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=true -p:TrimMode=partial -p:DebugType=none -o publish-selfcontained
 
       - name: Build runtime-dependent version
         run: |
@@ -154,55 +154,32 @@ jobs:
           VERSION="${{ needs.check.outputs.version }}"
           REPO="${{ github.repository }}"
           BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
+          COMMIT_SHA="${GITHUB_SHA::7}"
+          BUILD_DATE="$(date -u '+%Y-%m-%d %H:%M UTC')"
 
           # 查找上一个 release tag
           PREV_TAG=$(git tag --sort=-v:refname | grep -v "^${VERSION}$" | head -1)
 
-          {
-            echo "## 📦 Desuwa ${VERSION}"
-            echo ""
-            echo "### ⬇️ Download"
-            echo ""
-            echo "#### Self-contained 版本（推荐）"
-            echo "- [Desuwa-windows-x64-self-contained-${VERSION}.exe](${BASE_URL}/Desuwa-windows-x64-self-contained-${VERSION}.exe)"
-            echo ""
-            echo "> ✅ 单文件 exe，无需安装 .NET 运行时，双击即可运行"
-            echo "> 📦 体积约 140MB"
-            echo ""
-            echo "#### Runtime-dependent 版本"
-            echo "- [Desuwa-windows-x64-runtime-dependent-${VERSION}.zip](${BASE_URL}/Desuwa-windows-x64-runtime-dependent-${VERSION}.zip)"
-            echo ""
-            echo "> ⚠️ 需要预先安装 .NET 8.0 运行时"
-            echo "> 📦 体积约 60KB"
-            echo ""
-            echo "---"
-            echo ""
-            echo "### What's Changed"
-            echo ""
+          # 生成 commit log
+          if [ -n "$PREV_TAG" ]; then
+            COMMIT_LOG="Changes since **${PREV_TAG}**:"
+            COMMIT_LOG="${COMMIT_LOG}"$'\n'""
+            COMMIT_LOG="${COMMIT_LOG}"$'\n'"$(git log "${PREV_TAG}..HEAD" --pretty=format:'- %s (`%h`)' --reverse)"
+          else
+            COMMIT_LOG="Initial release"
+          fi
 
-            if [ -n "$PREV_TAG" ]; then
-              echo "Changes since **${PREV_TAG}**:"
-              echo ""
-              git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (\`%h\`)" --reverse
-            else
-              echo "Initial release"
-            fi
+          # 读取模板并替换占位符
+          NOTES=$(cat .github/release_template.md)
+          NOTES="${NOTES//__VERSION__/$VERSION}"
+          NOTES="${NOTES//__REPO__/$REPO}"
+          NOTES="${NOTES//__BASE_URL__/$BASE_URL}"
+          NOTES="${NOTES//__COMMIT_SHA__/$COMMIT_SHA}"
+          NOTES="${NOTES//__BUILD_DATE__/$BUILD_DATE}"
+          NOTES="${NOTES//__PREV_TAG__/$PREV_TAG}"
+          NOTES="${NOTES//__COMMIT_LOG__/$COMMIT_LOG}"
 
-            echo ""
-            echo ""
-            echo "---"
-            echo ""
-            echo "### 📊 Build Info"
-            echo "- **Build date**: $(date -u '+%Y-%m-%d %H:%M UTC')"
-            echo "- **Commit**: [\`${GITHUB_SHA::7}\`](https://github.com/${REPO}/commit/${GITHUB_SHA})"
-            echo ""
-
-            if [ -n "$PREV_TAG" ]; then
-              echo "**Full Changelog**: https://github.com/${REPO}/compare/${PREV_TAG}...${VERSION}"
-            else
-              echo "**Full Changelog**: https://github.com/${REPO}/commits/${VERSION}"
-            fi
-          } > release_notes.md
+          echo "$NOTES" > release_notes.md
 
           echo "📝 Generated release notes:"
           cat release_notes.md
