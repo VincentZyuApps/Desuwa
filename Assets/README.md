@@ -32,12 +32,12 @@
 cd Assets
 
 # 安装依赖（首次运行）
-uv venv
+uv venv --python 3.13
 uv pip install Pillow
 
 # 运行脚本
 uv run python generate_icons.py
-#别忘了 add commit push 生成的ico文件
+# 别忘了 add commit push 生成的ico文件
 ```
 
 ## 图标在代码中的使用
