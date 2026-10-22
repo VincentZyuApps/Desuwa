@@ -405,3 +405,9 @@ FodyWeavers.xsd
 *.sln.iml
 
 .idea/
+
+# Local run & publish artifacts
+startup.log
+crash.log
+settings.json
+publish-*/

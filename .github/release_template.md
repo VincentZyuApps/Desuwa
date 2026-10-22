@@ -4,21 +4,21 @@
 
 </div>
 
-## 📦 Desuwa __VERSION__
+## 📦 Desuwa __VERSION__ (WinUI 3 Fluent UI)
 
 ### ⬇️ Download
 
 | 版本 | 下载 | 压缩 | PDB | 体积 | 场景 |
 |------|:----:|:----:|:---:|:----:|------|
-| **Self-contained** | [![self-contained.exe](https://img.shields.io/badge/self--contained.exe-0078D4)](__BASE_URL__/Desuwa-windows-x64-self-contained-__VERSION__.exe) | ✅ gzip | ❌ stripped | ~60MB | 省C盘空间用户 |
-| **Runtime-dependent** | [![runtime-dependent.zip](https://img.shields.io/badge/runtime--dependent.zip-67b7d1)](__BASE_URL__/Desuwa-windows-x64-runtime-dependent-__VERSION__.zip) | ✅ zip | ❌ stripped | ~400KB | 已装 .NET 用户 |
-| **Debug** | [![debug.zip](https://img.shields.io/badge/debug.zip-8E8E93)](__BASE_URL__/Desuwa-windows-x64-debug-__VERSION__.zip) | ❌ none | ✅ portable | ~140MB | 开发者调 crash |
+| **📦 Self-contained** | [![self-contained.zip](https://img.shields.io/badge/self--contained.zip-0078D4)](__BASE_URL__/Desuwa-windows-x64-self-contained-__VERSION__.zip) | ✅ zip | ❌ stripped | ~60MB | 开箱即用免运行环境 |
+| **🧩 Runtime-dependent** | [![runtime-dependent.zip](https://img.shields.io/badge/runtime--dependent.zip-67b7d1)](__BASE_URL__/Desuwa-windows-x64-runtime-dependent-__VERSION__.zip) | ✅ zip | ❌ stripped | ~15MB | 已装 .NET 10 用户 |
+| **🐛 Debug** | [![debug.zip](https://img.shields.io/badge/debug.zip-8E8E93)](__BASE_URL__/Desuwa-windows-x64-debug-__VERSION__.zip) | ✅ zip | ✅ portable | ~70MB | 开发者调 crash / 诊断 |
 
-> ✅ **Self-contained** — 单文件 exe，无需安装 .NET 运行时，双击即可运行。gzip 内压缩，剥离 PDB，体积约 60MB。
+> ✅ **Self-contained** — 完整便携绿色包，内置 Windows App SDK 与 .NET 运行时，解压后双击 `Desuwa.exe` 即可运行。
 >
-> ⚠️ **Runtime-dependent** — 需要预先安装 .NET 8.0 运行时。zip 格式压缩，剥离 PDB，体积仅约 400KB。
+> ⚠️ **Runtime-dependent** — 需要预先安装 .NET 10 运行时与 Windows App SDK。zip 格式压缩，体积更精炼。
 >
-> 🐛 **Debug** — 未压缩，含 portable PDB 调试符号，适合开发者调试使用，体积约 140MB。
+> 🐛 **Debug** — 含 portable PDB 调试符号，适合开发者调试排查异常使用。
 
 ---
 

@@ -1,26 +1,52 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+        <UseWinUI>true</UseWinUI>
+        <WindowsPackageType>None</WindowsPackageType>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <Platforms>x64</Platforms>
         <Nullable>enable</Nullable>
-        <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableDefaultContentItems>false</EnableDefaultContentItems>
 
         <!-- 版本号配置 -->
-        <Version>2.0.3</Version>
-        <AssemblyVersion>2.0.3.0</AssemblyVersion>
-        <FileVersion>2.0.3.0</FileVersion>
+        <Version>3.0.0</Version>
+        <AssemblyVersion>3.0.0.0</AssemblyVersion>
+        <FileVersion>3.0.0.0</FileVersion>
 
-        <!-- 应用程序图标 -->
+        <!-- 应用程序图标与清单 -->
         <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+
+        <!-- 发布配置 -->
+        <PublishSingleFile>false</PublishSingleFile>
+        <PublishTrimmed>false</PublishTrimmed>
+        <SelfContained>true</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- 嵌入托盘图标资源 -->
-        <EmbeddedResource Include="Assets\enabled.ico" />
-        <EmbeddedResource Include="Assets\disabled.ico" />
+        <ApplicationDefinition Include="src\App.xaml" />
+        <Page Remove="src\App.xaml" />
+        <Manifest Include="$(ApplicationManifest)" />
+        <Content Include="Assets\*.ico" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Assets\*.png" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+        <PackageReference Include="H.NotifyIcon.WinUI" Version="2.4.1" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
+        <PackageReference Include="WinUIEx" Version="2.9.3" />
+    </ItemGroup>
+
+    <!-- 确保发布输出包含 MRT Core PRI 资源，避免启动丢失资源报错 -->
+    <Target Name="CopyProjectPriToPublish" AfterTargets="Publish" Condition="Exists('$(TargetDir)$(TargetName).pri')">
+        <Copy SourceFiles="$(TargetDir)$(TargetName).pri" DestinationFolder="$(PublishDir)" />
+    </Target>
 
 </Project>

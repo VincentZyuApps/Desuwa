@@ -52,9 +52,9 @@ internal sealed class SettingsStore(string? settingsPath = null)
         }
 
         settings.ToggleEnabledHotkey =
-            NormalizeHotkey(settings.ToggleEnabledHotkey, HotkeyGesture.CreateDefault(Keys.F10, Keys.Alt));
+            NormalizeHotkey(settings.ToggleEnabledHotkey, HotkeyGesture.CreateDefault(VirtualKey.F10, KeyModifiers.Alt));
         settings.ToggleModeHotkey =
-            NormalizeHotkey(settings.ToggleModeHotkey, HotkeyGesture.CreateDefault(Keys.F11, Keys.Alt));
+            NormalizeHotkey(settings.ToggleModeHotkey, HotkeyGesture.CreateDefault(VirtualKey.F11, KeyModifiers.Alt));
 
         return settings;
     }
@@ -66,7 +66,7 @@ internal sealed class SettingsStore(string? settingsPath = null)
             return fallback.Clone();
         }
 
-        if (!gesture.Enabled || gesture.Key == Keys.None)
+        if (!gesture.Enabled || gesture.Key == VirtualKey.None)
         {
             return HotkeyGesture.Disabled();
         }

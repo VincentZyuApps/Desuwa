@@ -47,7 +47,7 @@ internal sealed class GlobalHotkeyService : IDisposable
         string actionDisplayName,
         ICollection<string> failures)
     {
-        if (!gesture.Enabled || gesture.Key == Keys.None)
+        if (!gesture.Enabled || gesture.Key == VirtualKey.None)
         {
             return;
         }

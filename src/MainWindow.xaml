@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winuiex:WindowEx
+    x:Class="Desuwa.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:tb="using:H.NotifyIcon"
+    xmlns:winuiex="using:WinUIEx"
+    Title="Desuwa"
+    Width="580"
+    Height="740"
+    MinWidth="500"
+    MinHeight="600">
+
+    <winuiex:WindowEx.SystemBackdrop>
+        <MicaBackdrop />
+    </winuiex:WindowEx.SystemBackdrop>
+
+    <Grid Loaded="RootGrid_Loaded">
+        <!-- 系统托盘图标 -->
+        <tb:TaskbarIcon
+            x:Name="TrayIcon"
+            ToolTipText="Desuwa (已启用)"
+            ContextMenuMode="SecondWindow"
+            NoLeftClickDelay="True"
+            LeftClickCommand="{x:Bind ShowSettingsCommand}" />
+
+        <!-- 设置界面主内容 -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="28,20,28,24" Spacing="16">
+
+                <!-- 顶部应用标题栏 -->
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image
+                        Grid.Column="0"
+                        Width="44"
+                        Height="44"
+                        Source="/Assets/DesuwaLogo.png"
+                        Margin="0,0,16,0"
+                        Stretch="UniformToFill" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Desuwa" FontSize="20" FontWeight="SemiBold" />
+                            <Border
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                CornerRadius="4"
+                                Padding="6,1"
+                                VerticalAlignment="Center">
+                                <TextBlock Text="v3.0.0" FontSize="11" Foreground="White" FontWeight="Bold" />
+                            </Border>
+                        </StackPanel>
+                        <TextBlock
+                            Text="全自动口癖注入工具 - 按下回车自动发送口癖"
+                            FontSize="12"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- 信息提示栏 -->
+                <InfoBar x:Name="StatusInfoBar" IsOpen="False" Margin="0,0,0,4" />
+
+                <!-- 卡片 1: 口癖设置 -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="18,16">
+                    <StackPanel Spacing="10">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE765;" FontSize="16" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="口癖内容" FontSize="15" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <TextBlock
+                            Text="在任何软件中输入完文字按下回车（Enter）时，程序将在末尾自动追加此口癖后发出。"
+                            FontSize="12"
+                            TextWrapping="Wrap"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBox
+                            x:Name="SuffixTextBox"
+                            PlaceholderText="例如: ですわ、喵、desu"
+                            Margin="0,4,0,4" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock
+                                Text="快速预设:"
+                                FontSize="12"
+                                VerticalAlignment="Center"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                            <Button Content="ですわ" Click="PresetButton_Click" Padding="8,4" FontSize="12" />
+                            <Button Content="喵" Click="PresetButton_Click" Padding="8,4" FontSize="12" />
+                            <Button Content="desu" Click="PresetButton_Click" Padding="8,4" FontSize="12" />
+                            <Button Content="nya~" Click="PresetButton_Click" Padding="8,4" FontSize="12" />
+                            <Button Content="的说" Click="PresetButton_Click" Padding="8,4" FontSize="12" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 卡片 2: 注入方式 -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="18,16">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE8C8;" FontSize="16" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="文本注入方式" FontSize="15" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <RadioButton
+                            x:Name="ClipboardModeRadio"
+                            GroupName="InjectionModeGroup"
+                            IsChecked="True">
+                            <StackPanel Margin="0,0,0,4">
+                                <TextBlock Text="剪贴板粘贴 (推荐)" FontWeight="Medium" />
+                                <TextBlock
+                                    Text="将口癖写入系统剪贴板后粘贴，并自动无损恢复原剪贴板内容。对搜狗、微软拼音等中文输入法兼容性极好。"
+                                    FontSize="12"
+                                    TextWrapping="Wrap"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton
+                            x:Name="SimulatedModeRadio"
+                            GroupName="InjectionModeGroup">
+                            <StackPanel Margin="0,0,0,4">
+                                <TextBlock Text="逐字模拟输入" FontWeight="Medium" />
+                                <TextBlock
+                                    Text="通过操作系统底层事件逐字模拟敲击按键，不修改剪贴板。在开启中文输入法状态下可能偶发打出拼音码。"
+                                    FontSize="12"
+                                    TextWrapping="Wrap"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
+
+                <!-- 卡片 3: 全局快捷键 -->
+                <Border
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="18,16">
+                    <StackPanel Spacing="14">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE790;" FontSize="16" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                            <TextBlock Text="全局快捷键" FontSize="15" FontWeight="SemiBold" />
+                        </StackPanel>
+
+                        <!-- 快捷键 1: 启用/禁用 -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="切换启用 / 禁用状态" FontWeight="Medium" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox x:Name="ToggleEnabledEnableCheck" Content="启用" Grid.Column="0" IsChecked="True" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0">
+                                    <CheckBox x:Name="ToggleEnabledCtrlCheck" Content="Ctrl" />
+                                    <CheckBox x:Name="ToggleEnabledAltCheck" Content="Alt" IsChecked="True" />
+                                    <CheckBox x:Name="ToggleEnabledShiftCheck" Content="Shift" />
+                                </StackPanel>
+                                <ComboBox x:Name="ToggleEnabledKeyCombo" Grid.Column="2" Width="100" />
+                            </Grid>
+                        </StackPanel>
+
+                        <MenuFlyoutSeparator />
+
+                        <!-- 快捷键 2: 切换模式 -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="切换输入方式" FontWeight="Medium" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox x:Name="ToggleModeEnableCheck" Content="启用" Grid.Column="0" IsChecked="True" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0">
+                                    <CheckBox x:Name="ToggleModeCtrlCheck" Content="Ctrl" />
+                                    <CheckBox x:Name="ToggleModeAltCheck" Content="Alt" IsChecked="True" />
+                                    <CheckBox x:Name="ToggleModeShiftCheck" Content="Shift" />
+                                </StackPanel>
+                                <ComboBox x:Name="ToggleModeKeyCombo" Grid.Column="2" Width="100" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 操作按钮组 -->
+                <Grid Margin="0,4,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        Grid.Column="0"
+                        Content="恢复默认"
+                        Click="ResetDefaults_Click" />
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                        <Button
+                            Content="最小化到托盘"
+                            Click="HideToTray_Click" />
+                        <Button
+                            Content="保存设置"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Click="SaveSettings_Click" />
+                    </StackPanel>
+                </Grid>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</winuiex:WindowEx>

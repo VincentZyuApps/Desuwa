@@ -74,39 +74,39 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore Desuwa.csproj
 
       - name: Build self-contained version
         run: |
-          dotnet publish Desuwa.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=none -o publish-selfcontained
+          dotnet publish Desuwa.csproj -c Release -p:Platform=x64 -p:SelfContained=true -p:WindowsAppSDKSelfContained=true -p:DebugType=none -o publish-selfcontained
 
-      - name: Build debug version (uncompressed, with PDB)
+      - name: Build debug version (with PDB)
         run: |
-          dotnet publish Desuwa.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=false -p:DebugType=portable -p:IncludeSymbolsInSingleFile=false -o publish-debug
+          dotnet publish Desuwa.csproj -c Release -p:Platform=x64 -p:SelfContained=true -p:WindowsAppSDKSelfContained=true -p:DebugType=portable -o publish-debug
 
       - name: Build runtime-dependent version
         run: |
-          dotnet publish Desuwa.csproj -c Release --self-contained false -p:DebugType=none -o publish-runtime-dependent
+          dotnet publish Desuwa.csproj -c Release -p:Platform=x64 -p:SelfContained=false -p:WindowsAppSDKSelfContained=false -p:DebugType=none -o publish-runtime-dependent
 
       - name: Prepare artifacts
         shell: pwsh
         run: |
           $VERSION = "${{ needs.check.outputs.version }}"
 
-          # Self-contained exe
-          $SELFCONTAINED_NAME = "Desuwa-windows-x64-self-contained-${VERSION}.exe"
+          # Self-contained zip
+          $SELFCONTAINED_NAME = "Desuwa-windows-x64-self-contained-${VERSION}.zip"
           Write-Host "📦 Self-contained: $SELFCONTAINED_NAME"
-          Copy-Item "publish-selfcontained\Desuwa.exe" $SELFCONTAINED_NAME
+          Compress-Archive -Path "publish-selfcontained\*" -DestinationPath $SELFCONTAINED_NAME
 
           # Runtime-dependent zip
           $RUNTIME_DEP_NAME = "Desuwa-windows-x64-runtime-dependent-${VERSION}.zip"
           Write-Host "📦 Runtime-dependent version: $RUNTIME_DEP_NAME"
           Compress-Archive -Path "publish-runtime-dependent\*" -DestinationPath $RUNTIME_DEP_NAME
 
-          # Debug zip (uncompressed exe + PDB)
+          # Debug zip (with PDB)
           $DEBUG_NAME = "Desuwa-windows-x64-debug-${VERSION}.zip"
           Write-Host "🐛 Debug version: $DEBUG_NAME"
           Compress-Archive -Path "publish-debug\*" -DestinationPath $DEBUG_NAME
@@ -209,6 +209,6 @@ jobs:
             --title "Desuwa ${VERSION}" \
             --notes-file release_notes.md \
             --latest \
-            Desuwa-windows-x64-self-contained-${VERSION}.exe \
+            Desuwa-windows-x64-self-contained-${VERSION}.zip \
             Desuwa-windows-x64-runtime-dependent-${VERSION}.zip \
             Desuwa-windows-x64-debug-${VERSION}.zip

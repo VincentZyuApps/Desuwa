@@ -4,27 +4,28 @@ namespace Desuwa;
 
 public sealed class HotkeyGesture
 {
-    private const Keys AllowedModifiers = Keys.Control | Keys.Alt | Keys.Shift;
+    private const KeyModifiers AllowedModifiers = KeyModifiers.Control | KeyModifiers.Alt | KeyModifiers.Shift;
 
     public bool Enabled { get; set; }
 
-    public Keys Key { get; set; }
+    public VirtualKey Key { get; set; }
 
-    public Keys Modifiers { get; set; }
+    public KeyModifiers Modifiers { get; set; }
 
-    [JsonIgnore] public Keys NormalizedModifiers => NormalizeModifiers(Modifiers);
+    [JsonIgnore]
+    public KeyModifiers NormalizedModifiers => NormalizeModifiers(Modifiers);
 
     public static HotkeyGesture Disabled()
     {
         return new HotkeyGesture
         {
             Enabled = false,
-            Key = Keys.None,
-            Modifiers = Keys.None
+            Key = VirtualKey.None,
+            Modifiers = KeyModifiers.None
         };
     }
 
-    public static HotkeyGesture CreateDefault(Keys key, Keys modifiers = Keys.Control | Keys.Alt)
+    public static HotkeyGesture CreateDefault(VirtualKey key, KeyModifiers modifiers = KeyModifiers.Control | KeyModifiers.Alt)
     {
         return new HotkeyGesture
         {
@@ -46,7 +47,7 @@ public sealed class HotkeyGesture
 
     public bool IsValid()
     {
-        return !Enabled || (Key != Keys.None && NormalizeModifiers(Modifiers) != Keys.None);
+        return !Enabled || (Key != VirtualKey.None && NormalizeModifiers(Modifiers) != KeyModifiers.None);
     }
 
     public bool ConflictsWith(HotkeyGesture? other)
@@ -64,17 +65,17 @@ public sealed class HotkeyGesture
         var modifiers = NormalizeModifiers(Modifiers);
         uint nativeModifiers = NativeMethods.ModNorepeat;
 
-        if ((modifiers & Keys.Control) != 0)
+        if ((modifiers & KeyModifiers.Control) != 0)
         {
             nativeModifiers |= NativeMethods.ModControl;
         }
 
-        if ((modifiers & Keys.Alt) != 0)
+        if ((modifiers & KeyModifiers.Alt) != 0)
         {
             nativeModifiers |= NativeMethods.ModAlt;
         }
 
-        if ((modifiers & Keys.Shift) != 0)
+        if ((modifiers & KeyModifiers.Shift) != 0)
         {
             nativeModifiers |= NativeMethods.ModShift;
         }
@@ -84,7 +85,7 @@ public sealed class HotkeyGesture
 
     public string ToDisplayString()
     {
-        if (!Enabled || Key == Keys.None)
+        if (!Enabled || Key == VirtualKey.None)
         {
             return "(未设置)";
         }
@@ -92,17 +93,17 @@ public sealed class HotkeyGesture
         var parts = new List<string>();
         var modifiers = NormalizeModifiers(Modifiers);
 
-        if ((modifiers & Keys.Control) != 0)
+        if ((modifiers & KeyModifiers.Control) != 0)
         {
             parts.Add("Ctrl");
         }
 
-        if ((modifiers & Keys.Alt) != 0)
+        if ((modifiers & KeyModifiers.Alt) != 0)
         {
             parts.Add("Alt");
         }
 
-        if ((modifiers & Keys.Shift) != 0)
+        if ((modifiers & KeyModifiers.Shift) != 0)
         {
             parts.Add("Shift");
         }
@@ -111,16 +112,16 @@ public sealed class HotkeyGesture
         return string.Join("+", parts);
     }
 
-    private static Keys NormalizeModifiers(Keys modifiers)
+    private static KeyModifiers NormalizeModifiers(KeyModifiers modifiers)
     {
         return modifiers & AllowedModifiers;
     }
 
-    private static string GetKeyDisplayName(Keys key)
+    private static string GetKeyDisplayName(VirtualKey key)
     {
-        if (key is >= Keys.D0 and <= Keys.D9)
+        if (key is >= VirtualKey.D0 and <= VirtualKey.D9)
         {
-            return ((char)('0' + (key - Keys.D0))).ToString();
+            return ((char)('0' + (key - VirtualKey.D0))).ToString();
         }
 
         return key.ToString();
